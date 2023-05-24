@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400" >
+        此浏览器不支持canvas
+    </canvas>
+</body>
+</html>
+<script src="../lib/index.js"></script>
+<script>
+   /** @type {HTMLCanvasElement} */
+    let ctx= document.getElementById("canvas");
+    let gl = ctx.getContext("webgl");
+
+    //创建着色器
+    const VERTEX_SHADER_SOURCE=`
+    void main(){
+        gl_Position= vec4(0.0,0.0,0.0,1.0);
+        gl_PointSize=100.0;
+    }`;
+    const FRAGMENT_SHADER_SOURCE=`
+    precision lowp float;
+     void main(){
+        float dis=distance(gl_PointCoord,vec2(0.5,0.5));
+        if(dis>0.5||dis<0.4){
+            discard;
+        }
+        gl_FragColor=vec4( 1.0,0.0,0.0,1.0);
+        
+    }`;
+    const program=initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE)
+    
+    gl.drawArrays(gl.POINTS,0,1)
+</script>

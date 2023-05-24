@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+</html>
+<script src="../lib/three/three.js"></script>
+<script>
+    //创建场景
+    const scene=new THREE.Scene();
+    // 创建一个相机 视点
+    const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,1000);
+    // 设置相机的位置
+    camera.position.set(0,0,20);
+    // 创建一个渲染器
+    const renderer=new THREE.WebGLRenderer();
+    // 设置渲染器尺寸
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    // 添加一个立方体
+    const geometry=new THREE.BoxGeometry(6,6,3);
+
+    //创建纹理加载器
+    const loader=new THREE.TextureLoader()
+    loader.load('../assets/wall.jpg',(texture)=>{
+        // 创建材质
+        const lambert = new THREE.MeshPhongMaterial({
+            map:texture
+        })
+        const mesh=new THREE.Mesh(geometry,lambert)
+        mesh.rotation.y=-0.1;
+        mesh.position.x=-4
+        // 添加到场景里
+        scene.add(mesh);
+    })
+    renderer.setClearColor(0xffffff)
+    loader.load('../assets/wall.jpg',(texture)=>{
+        loader.load('../assets/wall-bump.jpg',(bump)=>{
+            // 创建材质
+            const lambert = new THREE.MeshPhongMaterial({
+                map:texture,
+                bumpMap:bump,
+                bumpScale:0.1
+            })
+            const mesh=new THREE.Mesh(geometry,lambert)
+            mesh.rotation.y=-0.5;
+            mesh.position.x=4
+            // 添加到场景里
+            scene.add(mesh);
+        })
+
+    })
+
+
+
+    //添加灯光
+    const spotLight=new THREE.SpotLight(0xffffff);
+    spotLight.position.set(-10,10,90);
+    scene.add(spotLight);
+
+    // initControls(geometry,camera,mesh,scene)
+    const animation = () => {
+        //渲染
+        renderer.render(scene,camera);
+        requestAnimationFrame(animation)
+    }
+    animation()
+
+</script>

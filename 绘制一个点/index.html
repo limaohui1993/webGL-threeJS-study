@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400" >
+        此浏览器不支持canvas
+    </canvas>
+</body>
+</html>
+<script src="./lib/index.js"></script>
+<script>
+   /** @type {HTMLCanvasElement} */
+    let ctx= document.getElementById("canvas");
+    let gl = ctx.getContext("webgl");
+
+    //创建着色器
+    const VERTEX_SHADER_SOURCE=`
+    void main(){
+        gl_Position=vec4( 0.0,0.0,0.0,1.0);
+        gl_PointSize=30.0;
+    }`;
+    const FRAGMENT_SHADER_SOURCE=`
+     void main(){
+        gl_FragColor=vec4( 1.0,0.0,0.0,1.0);
+    }`;
+
+    //创建着色器
+    // const vertexShader=gl.createShader(gl.VERTEX_SHADER);
+    // const fragmentShader=gl.createShader(gl.FRAGMENT_SHADER);
+
+    // gl.shaderSource(vertexShader,VERTEX_SHADER_SOURCE)
+    // gl.shaderSource(fragmentShader,FRAGMENT_SHADER_SOURCE)
+
+    // //编译着色器
+    // gl.compileShader(vertexShader);
+    // gl.compileShader(fragmentShader);
+
+    // //创建一个程序对象
+    // const program=gl.createProgram();
+    // gl.attachShader(program,vertexShader)
+    // gl.attachShader(program,fragmentShader)
+
+    // gl.linkProgram(program);
+    // gl.useProgram(program)
+    initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE)
+
+    //执行绘制
+    //参数：1要绘制的图形是什么 2从哪个开始 3使用几个顶点
+    gl.drawArrays(gl.POINTS,0,1)
+    //gl.drawArrays(gl.LINTS,0,1)//最少有两个点
+    //gl.drawArrays(gl.TRIANGLES,0,1)//最少有三个点
+</script>

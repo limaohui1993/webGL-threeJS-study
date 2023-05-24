@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #canvas{
+            margin: 50px auto 0;
+            display: block;
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400" >
+        此浏览器不支持canvas
+    </canvas>
+</body>
+</html>
+<script src="../lib/index.js"></script>
+<script>
+   /** @type {HTMLCanvasElement} */
+    let ctx= document.getElementById("canvas");
+    let gl = ctx.getContext("webgl");
+
+    //创建着色器
+    const VERTEX_SHADER_SOURCE=`
+    attribute vec4 aPosition;
+    void main(){
+        gl_Position=aPosition;
+        gl_PointSize=10.0;
+    }`;
+    const FRAGMENT_SHADER_SOURCE=`
+     void main(){
+        gl_FragColor=vec4( 1.0,0.0,0.0,1.0);
+    }`;
+    const program=initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE)
+    let aPosition=gl.getAttribLocation(program,"aPosition")
+   let points=[]
+    // ctx.onmousemove=function(e){
+    ctx.onclick=function(e){
+        const x=e.clientX;
+        const y=e.clientY;
+
+        const domPosition=e.target.getBoundingClientRect()
+        const domX=x-domPosition.left;
+        const domY=y-domPosition.top;
+
+        // 将x和y转换为坐标
+        //canvas 高400 宽400  x坐标 -1 0 1    宽度是 -200 0 200  高度 200 0 -200
+
+        const halfWidth=ctx.width/2;
+        const halfHeight=ctx.height/2;
+
+        const clickX=(domX-halfWidth)/halfWidth;
+        const clickY=(halfHeight-domY)/halfHeight;
+        points.push({
+            clickX,clickY
+        })
+        points.forEach(item=>{
+            gl.vertexAttrib2f(aPosition,item.clickX, item.clickY)
+        gl.drawArrays(gl.POINTS,0,1)
+        })
+        
+    }
+</script>

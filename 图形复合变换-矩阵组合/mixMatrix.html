@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #canvas{
+            margin: 50px auto 0;
+            display: block;
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400" >
+        此浏览器不支持canvas
+    </canvas>
+</body>
+</html>
+<script src="../lib/index.js"></script>
+<script>
+   /** @type {HTMLCanvasElement} */
+    let ctx= document.getElementById("canvas");
+    let gl = ctx.getContext("webgl");
+
+    //创建着色器
+    const VERTEX_SHADER_SOURCE=`
+    attribute vec4 aPosition;
+    uniform mat4 mat;
+    void main(){
+        gl_Position=mat * aPosition ;
+    }`;
+    const FRAGMENT_SHADER_SOURCE=`
+     void main(){
+        gl_FragColor=vec4(1.0,0.0,0.0,1.0);
+    }`;
+    const program=initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE)
+    let aPosition=gl.getAttribLocation(program,"aPosition")
+    let mat=gl.getUniformLocation(program,"mat")
+    const points=new Float32Array([
+        -0.5,-0.5,
+        0.5,-0.5,
+        0.0,0.5,
+    ])
+
+    const buffer=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+    gl.bufferData(gl.ARRAY_BUFFER,points,gl.STATIC_DRAW)
+    gl.vertexAttribPointer(aPosition,2,gl.FLOAT,false,0,0)
+    gl.enableVertexAttribArray(aPosition)
+
+    let deg=0;
+    let translateX=-1;
+    let scaleX=0.1;
+    function animation(params) {
+        deg+=0.01;
+        translateX+=0.01;
+        scaleX+=0.01;
+        if(translateX>1){
+            translateX=-1
+        }
+        if(scaleX>1.5){
+            scaleX=0.1
+        }
+        const translate=getTranslateMatrix(translateX)
+        const scale=getScaleMatrix(scaleX)
+        const rotation=getRotateMatrix(deg)
+
+        const matrix=mixMatrix(mixMatrix(translate,scale),rotation)
+        // gl.vertexAttrib1f(aTranslate,x)
+        gl.uniformMatrix4fv(mat,false,matrix)
+        gl.drawArrays(gl.TRIANGLES,0,3)
+        requestAnimationFrame(animation)
+    }
+    animation()
+    
+</script>
